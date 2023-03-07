@@ -5,6 +5,9 @@ function GenieChatBot(options) {
     chatBackgroundColor: "#5297ff",
     chatTextColor: "white",
     chatIconColor: "#fff",
+    resource_url: "/api/home_chatbot/",
+    base_url: "",
+    client_token: "",
   };
 
   options = { ...default_options, ...options };
@@ -20,57 +23,57 @@ function GenieChatBot(options) {
 
   this.appendContent = function () {
     document.querySelector(`#${options.elementId}`).innerHTML = `
-        <div class="chat-bar-collapsible">
-            <button id="chat-button" type="button" class="collapsible" style="background-color: ${options.chatBackgroundColor}; color: ${options.chatTextColor}">
-                ${options.chatTitle}
-                <i
-                id="chat-icon"
-                style="color: white"
-                class="fa-regular fa-comments"
-                ></i>
-          </button>
-          <div class="content">
-            <div class="full-chat-block">
-              <div class="outer-container">
-                <div class="chat-container">
-                  <div id="chatbox">
-                    <h5 id="chat-timestamp"></h5>
-                    <p id="botStarterMessage" class="botText">
-                      <span>Loading...</span>
-                    </p>
-                  </div>
-    
-                  <div class="chat-bar-input-block">
-                    <div id="userInput">
-                      <input
-                        id="textInput"
-                        class="input-box"
-                        type="text"
-                        name="msg"
-                        placeholder="Tap 'Enter' to send a message"
-                      />
-                      <p></p>
-                    </div>
-    
-                    <div class="chat-bar-icons">
-                      <i
-                        id="chat-icon-send"
-                        style="color: #333"
-                        class="fa-solid fa-paper-plane"
-                       
-                      ></i>
-                    </div>
-                  </div>
-    
-                  <div id="chat-bar-bottom">
+      <div class="chat-bar-collapsible">
+          <button id="chat-button" type="button" class="collapsible" style="background-color: ${options.chatBackgroundColor}; color: ${options.chatTextColor}">
+              ${options.chatTitle}
+              <i
+              id="chat-icon"
+              style="color: white"
+              class="fa-regular fa-comments"
+              ></i>
+        </button>
+        <div class="content">
+          <div class="full-chat-block">
+            <div class="outer-container">
+              <div class="chat-container">
+                <div id="chatbox">
+                  <h5 id="chat-timestamp"></h5>
+                  <p id="botStarterMessage" class="botText">
+                    <span>Loading...</span>
+                  </p>
+                </div>
+  
+                <div class="chat-bar-input-block">
+                  <div id="userInput">
+                    <input
+                      id="textInput"
+                      class="input-box"
+                      type="text"
+                      name="msg"
+                      placeholder="Tap 'Enter' to send a message"
+                    />
                     <p></p>
                   </div>
+  
+                  <div class="chat-bar-icons">
+                    <i
+                      id="chat-icon-send"
+                      style="color: #333"
+                      class="fa-solid fa-paper-plane"
+                     
+                    ></i>
+                  </div>
+                </div>
+  
+                <div id="chat-bar-bottom">
+                  <p></p>
                 </div>
               </div>
             </div>
           </div>
-         </div>
-        `;
+        </div>
+       </div>
+      `;
   };
 
   this.toggleChat = function () {
@@ -194,22 +197,26 @@ function GenieChatBot(options) {
     document.getElementById("chat-bar-bottom").scrollIntoView(true);
     _this.loader(uniqueId);
 
-    let botResponse = await _this.postData(userText);
+    let botResponse = await _this.getBotResponse(userText);
 
     let element = document.getElementById(uniqueId);
     element.textContent = "";
     _this.typeText(element, botResponse);
   };
 
-  this.postData = async function (input) {
+  this.getBotResponse = async function (input) {
+    const url = options.base_url + options.resource_url;
     try {
-      const response = await fetch("/api/home_chatbot/", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/x-www-form-urlencoded",
-        },
-        body: input,
-      });
+      const response = await fetch(
+        `${url}?client_token=${options.client_token}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/x-www-form-urlencoded",
+          },
+          body: input,
+        }
+      );
       const data = await response;
       clearInterval(loadInterval);
       return data.text();
@@ -218,16 +225,16 @@ function GenieChatBot(options) {
     }
   };
 
-  this.getBotResponse = function (input) {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("POST", "/api/home_chatbot/", false);
-    xmlHttp.setRequestHeader(
-      "Content-type",
-      "application/x-www-form-urlencoded"
-    );
-    xmlHttp.send(input);
-    return xmlHttp.response;
-  };
+  // this.getBotResponse = function (input) {
+  //   var xmlHttp = new XMLHttpRequest();
+  //   xmlHttp.open("POST", "/api/home_chatbot/", false);
+  //   xmlHttp.setRequestHeader(
+  //     "Content-type",
+  //     "application/x-www-form-urlencoded"
+  //   );
+  //   xmlHttp.send(input);
+  //   return xmlHttp.response;
+  // };
 
   this.sendButton = function () {
     let sendButtonElement = document.getElementById("chat-icon");
