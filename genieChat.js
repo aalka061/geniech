@@ -208,7 +208,7 @@ function GenieChatBot(options) {
     const url = options.base_url + options.resource_url;
     try {
       const response = await fetch(
-        `${url}?client_token=${options.client_token}`,
+        `${url}?token=${options.client_token}`,
         {
           method: "POST",
           headers: {
