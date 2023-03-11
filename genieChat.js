@@ -14,6 +14,7 @@ function GenieChatBot(options) {
   let _this = this;
   let loadInterval;
   this.init = function () {
+    alert(options.client_token);
     this.appendContent();
     this.toggleChat();
     this.firstBotMessage();
