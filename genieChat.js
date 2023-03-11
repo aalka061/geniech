@@ -1,255 +1,52 @@
-function GenieChatBot(options) {
-  default_options = {
-    elementId: "app",
-    chatTitle: "Chat with us!",
-    chatBackgroundColor: "#5297ff",
-    chatTextColor: "white",
-    chatIconColor: "#fff",
-    resource_url: "/api/home_chatbot/",
-    base_url: "",
-    client_token: "",
-  };
-
-  options = { ...default_options, ...options };
-  let _this = this;
-  let loadInterval;
-  this.init = function () {
-    this.appendContent();
-    this.toggleChat();
-    this.firstBotMessage();
-    this.sendWhenEnterKeyisPressed();
-    this.sendButtonWhenPressed();
-  };
-
-  this.appendContent = function () {
-    document.querySelector(`#${options.elementId}`).innerHTML = `
-      <div class="chat-bar-collapsible">
-          <button id="chat-button" type="button" class="collapsible" style="background-color: ${options.chatBackgroundColor}; color: ${options.chatTextColor}">
-              ${options.chatTitle}
-              <i
-              id="chat-icon"
-              style="color: white"
-              class="fa-regular fa-comments"
-              ></i>
-        </button>
-        <div class="content">
-          <div class="full-chat-block">
-            <div class="outer-container">
-              <div class="chat-container">
-                <div id="chatbox">
-                  <h5 id="chat-timestamp"></h5>
-                  <p id="botStarterMessage" class="botText">
-                    <span>Loading...</span>
-                  </p>
-                </div>
-  
-                <div class="chat-bar-input-block">
-                  <div id="userInput">
-                    <input
-                      id="textInput"
-                      class="input-box"
-                      type="text"
-                      name="msg"
-                      placeholder="Tap 'Enter' to send a message"
-                    />
+function GenieChatBot(t){t={...default_options={elementId:"app",chatTitle:"Chat with us!",chatBackgroundColor:"#5297ff",chatTextColor:"white",chatIconColor:"#fff",resource_url:"/api/basic_cbt/",base_url:"",client_token:""},...t};let e=this,n;this.init=function(){this.appendContent(),this.toggleChat(),this.firstBotMessage(),this.sendWhenEnterKeyisPressed(),this.sendButtonWhenPressed()},this.appendContent=function(){document.querySelector(`#${t.elementId}`).innerHTML=`
+        <div class="chat-bar-collapsible">
+            <button id="chat-button" type="button" class="collapsible" style="background-color: ${t.chatBackgroundColor}; color: ${t.chatTextColor}">
+                ${t.chatTitle}
+                <i
+                id="chat-icon"
+                style="color: white"
+                class="fa-regular fa-comments"
+                ></i>
+          </button>
+          <div class="content">
+            <div class="full-chat-block">
+              <div class="outer-container">
+                <div class="chat-container">
+                  <div id="chatbox">
+                    <h5 id="chat-timestamp"></h5>
+                    <p id="botStarterMessage" class="botText">
+                      <span>Loading...</span>
+                    </p>
+                  </div>
+    
+                  <div class="chat-bar-input-block">
+                    <div id="userInput">
+                      <input
+                        id="textInput"
+                        class="input-box"
+                        type="text"
+                        name="msg"
+                        placeholder="Tap 'Enter' to send a message"
+                      />
+                      <p></p>
+                    </div>
+    
+                    <div class="chat-bar-icons">
+                      <i
+                        id="chat-icon-send"
+                        style="color: #333"
+                        class="fa-solid fa-paper-plane"
+                       
+                      ></i>
+                    </div>
+                  </div>
+    
+                  <div id="chat-bar-bottom">
                     <p></p>
                   </div>
-  
-                  <div class="chat-bar-icons">
-                    <i
-                      id="chat-icon-send"
-                      style="color: #333"
-                      class="fa-solid fa-paper-plane"
-                     
-                    ></i>
-                  </div>
-                </div>
-  
-                <div id="chat-bar-bottom">
-                  <p></p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-       </div>
-      `;
-  };
-
-  this.toggleChat = function () {
-    let coll = document.getElementsByClassName("collapsible");
-
-    for (let i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function () {
-        this.classList.toggle("active");
-
-        var content = this.nextElementSibling;
-
-        if (content.style.maxHeight) {
-          content.style.maxHeight = null;
-        } else {
-          content.style.maxHeight = content.scrollHeight + "px";
-        }
-      });
-    }
-  };
-  this.firstBotMessage = function () {
-    // Gets the first message
-    let firstMessage = "Let me know how can I help you";
-    document.getElementById("botStarterMessage").innerHTML =
-      '<p class="botText"><span>' + firstMessage + "</span></p>";
-    let time = this.getTime();
-    let timeElement = document.getElementById("chat-timestamp");
-    let timeSpan = document.createElement("span");
-    timeSpan.textContent = time;
-    timeElement.appendChild(timeSpan);
-    document.getElementById("userInput").scrollIntoView(false);
-  };
-
-  this.getTime = function () {
-    let today = new Date();
-    let hours = today.getHours();
-    let minutes = today.getMinutes();
-
-    if (hours < 10) {
-      hours = "0" + hours;
-    }
-
-    if (minutes < 10) {
-      minutes = "0" + minutes;
-    }
-
-    let time = hours + ":" + minutes;
-    return time;
-  };
-
-  this.sendWhenEnterKeyisPressed = function () {
-    let textInput = document.getElementById("textInput");
-    textInput.addEventListener("keypress", function (event) {
-      if (event.key === "Enter") {
-        _this.getResponse();
-      }
-    });
-  };
-
-  this.getResponse = function () {
-    const textInput = document.getElementById("textInput");
-    const userText = textInput.value;
-
-    let userHtml = '<p class="userText"><span>' + userText + "</span></p>";
-
-    textInput.value = "";
-    let chatbox = document.getElementById("chatbox");
-    let userElement = document.createElement("div");
-    userElement.innerHTML = userHtml;
-    chatbox.appendChild(userElement);
-    document.getElementById("chat-bar-bottom").scrollIntoView(true);
-
-    setTimeout(() => {
-      _this.getHardResponse(userText);
-    }, 1000);
-  };
-
-  this.loader = function (element_id) {
-    let element = document.getElementById(element_id);
-    // element.innerHTML = "<span></span>";
-
-    loadInterval = setInterval(() => {
-      // Update the text content of the loading indicator
-      element.textContent += ".";
-
-      // If the loading indicator has reached three dots, reset it
-      if (element.textContent === "....") {
-        element.textContent = ".";
-      }
-    }, 300);
-  };
-
-  this.typeText = function (element, text) {
-    let index = 0;
-
-    let interval = setInterval(() => {
-      if (index < text.length) {
-        element.innerHTML += text.charAt(index);
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 20);
-  };
-  // generate unique ID for each message div of bot
-  this.generateUniqueId = function () {
-    const timestamp = Date.now();
-    const randomNumber = Math.random();
-    const hexadecimalString = randomNumber.toString(16);
-
-    return `id-${timestamp}-${hexadecimalString}`;
-  };
-
-  this.getHardResponse = async function (userText) {
-    let uniqueId = _this.generateUniqueId();
-    let botHtml = `<p class='botText'><span id=${uniqueId}></span></p>`;
-    let chatbox = document.getElementById("chatbox");
-    let userElement = document.createElement("div");
-    userElement.innerHTML = botHtml;
-    console.log(userElement);
-    chatbox.appendChild(userElement);
-    document.getElementById("chat-bar-bottom").scrollIntoView(true);
-    _this.loader(uniqueId);
-
-    let botResponse = await _this.getBotResponse(userText);
-
-    let element = document.getElementById(uniqueId);
-    element.textContent = "";
-    _this.typeText(element, botResponse);
-  };
-
-  this.getBotResponse = async function (input) {
-    const url = options.base_url + options.resource_url;
-    try {
-      const response = await fetch(
-        `${url}?token=${options.client_token}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/x-www-form-urlencoded",
-          },
-          body: input,
-        }
-      );
-      const data = await response;
-      clearInterval(loadInterval);
-      return data.text();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // this.getBotResponse = function (input) {
-  //   var xmlHttp = new XMLHttpRequest();
-  //   xmlHttp.open("POST", "/api/home_chatbot/", false);
-  //   xmlHttp.setRequestHeader(
-  //     "Content-type",
-  //     "application/x-www-form-urlencoded"
-  //   );
-  //   xmlHttp.send(input);
-  //   return xmlHttp.response;
-  // };
-
-  this.sendButton = function () {
-    let sendButtonElement = document.getElementById("chat-icon");
-    console.log(sendButtonElement);
-    sendButtonElement.addEventListener("click", function () {
-      alert();
-    });
-  };
-
-  this.sendButtonWhenPressed = function () {
-    let sendButtonElement = document.getElementById("chat-icon-send");
-    sendButtonElement.addEventListener("click", function (event) {
-      _this.getResponse();
-    });
-  };
-
-  this.init();
-}
+         </div>
+        `},this.toggleChat=function(){let t=document.getElementsByClassName("collapsible");for(let e=0;e<t.length;e++)t[e].addEventListener("click",function(){this.classList.toggle("active");var t=this.nextElementSibling;t.style.maxHeight?t.style.maxHeight=null:t.style.maxHeight=t.scrollHeight+"px"})},this.firstBotMessage=function(){document.getElementById("botStarterMessage").innerHTML='<p class="botText"><span>Let me know how can I help you</span></p>';let t=this.getTime(),e=document.getElementById("chat-timestamp"),n=document.createElement("span");n.textContent=t,e.appendChild(n),document.getElementById("userInput").scrollIntoView(!1)},this.getTime=function(){let t=new Date,e=t.getHours(),n=t.getMinutes();return e<10&&(e="0"+e),n<10&&(n="0"+n),e+":"+n},this.sendWhenEnterKeyisPressed=function(){document.getElementById("textInput").addEventListener("keypress",function(t){"Enter"===t.key&&e.getResponse()})},this.getResponse=function(){let t=document.getElementById("textInput"),n=t.value;t.value="";let i=document.getElementById("chatbox"),s=document.createElement("div");s.innerHTML='<p class="userText"><span>'+n+"</span></p>",i.appendChild(s),document.getElementById("chat-bar-bottom").scrollIntoView(!0),setTimeout(()=>{e.getHardResponse(n)},1e3)},this.loader=function(t){let e=document.getElementById(t);n=setInterval(()=>{e.textContent+=".","...."===e.textContent&&(e.textContent=".")},300)},this.typeText=function(t,e){let n=0,i=setInterval(()=>{n<e.length?(t.innerHTML+=e.charAt(n),n++):clearInterval(i)},20)},this.generateUniqueId=function(){let t=Date.now(),e=Math.random().toString(16);return`id-${t}-${e}`},this.getHardResponse=async function(t){let n=e.generateUniqueId(),i=`<p class='botText'><span id=${n}></span></p>`,s=document.getElementById("chatbox"),o=document.createElement("div");o.innerHTML=i,s.appendChild(o),document.getElementById("chat-bar-bottom").scrollIntoView(!0),e.loader(n,".");let a=await e.getBotResponse(t),l=document.getElementById(n);l.textContent="",a?e.typeText(l,a):l.textContent="Sorry, something went wrong :( contact us to fix it  "},this.getBotResponse=async function(e){let i=t.base_url+t.resource_url,s,o={token:t.client_token,prompt:e};try{if(s=await fetch(i,{method:"POST",headers:{"Content-type":"application/x-www-form-urlencoded"},body:JSON.stringify(o)}),clearInterval(n),s?.ok)return s.text();return console.log(s),!1}catch(a){return console.log(a),!1}},this.sendButton=function(){document.getElementById("chat-icon").addEventListener("click",function(){alert()})},this.sendButtonWhenPressed=function(){document.getElementById("chat-icon-send").addEventListener("click",function(t){e.getResponse()})},this.init()}
