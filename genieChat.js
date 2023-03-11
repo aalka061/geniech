@@ -211,6 +211,7 @@ function GenieChatBot(options) {
   this.getBotResponse = async function (input) {
     const url = options.base_url + options.resource_url;
     let response;
+    console.log(options.client_token);
     const params = {
       token: options.client_token,
       prompt: input,
