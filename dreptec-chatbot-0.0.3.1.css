@@ -56,7 +56,7 @@
 }
 
 .full-chat-block {
-  /* width: 350px; */
+  width: 350px;
   background: white;
   text-align: center;
   overflow: auto;
@@ -91,13 +91,13 @@
 }
 
 .chat-bar-input-block {
-  position: absolute;
+  position: relative;
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: rgb(235, 235, 235);
+  background-color: rgb(235, 220, 235);
   border-radius: 10px 10px 0px 0px;
-  padding: 10px 0px 10px 10px;
+  padding: 5px 0px 35px 10px;
 }
 
 .chat-bar-icons {
@@ -237,6 +237,15 @@
     border: 3px solid white;
     border-bottom: none;
     /* border-radius: 50%; */
+  }
+  .full-chat-block {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(235, 220, 235);
+    border-radius: 10px 10px 0px 0px;
+    padding: 5px 0px 40px 10px;
   }
   .chat-bar-collapsible-open {
     position: fixed;
